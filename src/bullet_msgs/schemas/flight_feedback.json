@@ -1,123 +1,255 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "additionalProperties": false,
-  "properties": {
-    "schema_version": {
-      "type": "integer",
-      "const": 1
-    },
-    "source": {
+  "oneOf": [
+    {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "physics_id": {
-          "type": "string",
-          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        "schema_version": {
+          "type": "integer",
+          "const": 1
         },
-        "episode_id": {
-          "type": "string",
-          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "physics_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,128}$"
+            },
+            "episode_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,128}$"
+            },
+            "stream_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,128}$"
+            },
+            "step_index": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "simulation_time_s": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000000000000.0
+            },
+            "measurement_us": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "physics_id",
+            "episode_id",
+            "stream_id",
+            "step_index",
+            "simulation_time_s",
+            "measurement_us"
+          ]
         },
-        "stream_id": {
-          "type": "string",
-          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        "barometer_altitude_m": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": -1000000000000.0,
+              "maximum": 1000000000000.0
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
-        "step_index": {
+        "orientation_xyzw": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "type": "number",
+            "minimum": -1,
+            "maximum": 1
+          }
+        },
+        "armed": {
+          "type": "boolean"
+        },
+        "mode": {
+          "enum": [
+            "angle",
+            "acro"
+          ]
+        },
+        "last_applied_sequence": {
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
         },
-        "simulation_time_s": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1000000000000.0
+        "owner_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,128}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
-        "measurement_us": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
+        "state": {
+          "enum": [
+            "running",
+            "stopped",
+            "error"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
         }
       },
       "required": [
-        "physics_id",
-        "episode_id",
-        "stream_id",
-        "step_index",
-        "simulation_time_s",
-        "measurement_us"
+        "schema_version",
+        "source",
+        "barometer_altitude_m",
+        "orientation_xyzw",
+        "armed",
+        "mode",
+        "last_applied_sequence",
+        "owner_id",
+        "state",
+        "reason"
       ]
     },
-    "barometer_altitude_m": {
-      "anyOf": [
-        {
-          "type": "number",
-          "minimum": -1000000000000.0,
-          "maximum": 1000000000000.0
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "type": "integer",
+          "const": 2
         },
-        {
-          "type": "null"
-        }
-      ]
-    },
-    "orientation_xyzw": {
-      "type": "array",
-      "minItems": 4,
-      "maxItems": 4,
-      "items": {
-        "type": "number",
-        "minimum": -1,
-        "maximum": 1
-      }
-    },
-    "armed": {
-      "type": "boolean"
-    },
-    "mode": {
-      "enum": [
-        "angle",
-        "acro"
-      ]
-    },
-    "last_applied_sequence": {
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 9007199254740991
-    },
-    "owner_id": {
-      "anyOf": [
-        {
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "physics_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,128}$"
+            },
+            "episode_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,128}$"
+            },
+            "stream_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,128}$"
+            },
+            "step_index": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "simulation_time_s": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000000000000.0
+            },
+            "measurement_us": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "physics_id",
+            "episode_id",
+            "stream_id",
+            "step_index",
+            "simulation_time_s",
+            "measurement_us"
+          ]
+        },
+        "barometer_altitude_m": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": -1000000000000.0,
+              "maximum": 1000000000000.0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "orientation_xyzw": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "type": "number",
+            "minimum": -1,
+            "maximum": 1
+          }
+        },
+        "armed": {
+          "type": "boolean"
+        },
+        "mode": {
+          "enum": [
+            "angle",
+            "acro"
+          ]
+        },
+        "last_applied_sequence": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "owner_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,128}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state": {
+          "enum": [
+            "running",
+            "stopped",
+            "error"
+          ]
+        },
+        "reason": {
           "type": "string",
-          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+          "minLength": 1,
+          "maxLength": 256
         },
-        {
-          "type": "null"
+        "takeoff_height_m": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 100
         }
+      },
+      "required": [
+        "schema_version",
+        "source",
+        "barometer_altitude_m",
+        "orientation_xyzw",
+        "armed",
+        "mode",
+        "last_applied_sequence",
+        "owner_id",
+        "state",
+        "reason",
+        "takeoff_height_m"
       ]
-    },
-    "state": {
-      "enum": [
-        "running",
-        "stopped",
-        "error"
-      ]
-    },
-    "reason": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 256
     }
-  },
-  "required": [
-    "schema_version",
-    "source",
-    "barometer_altitude_m",
-    "orientation_xyzw",
-    "armed",
-    "mode",
-    "last_applied_sequence",
-    "owner_id",
-    "state",
-    "reason"
   ]
 }

@@ -5,7 +5,7 @@ import re
 
 
 def schema_bytes(name):
-    if name not in ("config.json", "pose.json", "image.json", "command.json", "state.json", "bbox.json", "flight_rc.json", "flight_config.json", "flight_feedback.json", "mission.json", "collision.json", "scenario_end.json", "los_telemetry.json"):
+    if name not in ("config.json", "pose.json", "image.json", "command.json", "state.json", "bbox.json", "flight_rc.json", "flight_config.json", "flight_feedback.json", "mission.json", "collision.json", "scenario_end.json", "los_telemetry.json", "spawn_request.json", "spawn_state.json"):
         raise ValueError("unknown bullet_msgs schema")
     return files("bullet_msgs").joinpath("schemas", name).read_bytes()
 

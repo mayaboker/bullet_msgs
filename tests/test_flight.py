@@ -46,3 +46,21 @@ def test_stamped_descriptor_preserves_source_and_binary_header():
     finally:
         reader.close()
         writer.close()
+
+
+def test_feedback_v2_carries_selected_takeoff_and_v1_stays_valid():
+    from bullet_msgs.flight import validate_feedback
+    base = dict(schema_version=1, source=SOURCE, barometer_altitude_m=30,
+                orientation_xyzw=[0, 0, 0, 1], armed=False, mode='angle',
+                last_applied_sequence=0, owner_id=None, state='stopped', reason='spawn_applied')
+    schema = Draft202012Validator(json.loads(schema_bytes('flight_feedback.json')))
+    for packet in (base, dict(base, schema_version=2, takeoff_height_m=6.5)):
+        validate_feedback(packet)
+        schema.validate(packet)
+    for value in (0, -.1, 100.1, True, float('nan'), float('inf'), None):
+        with pytest.raises(ValueError):
+            validate_feedback(dict(base, schema_version=2, takeoff_height_m=value))
+    with pytest.raises(ValueError):
+        validate_feedback(dict(base, schema_version=2))
+    with pytest.raises(ValueError):
+        validate_feedback(dict(base, takeoff_height_m=6.5))

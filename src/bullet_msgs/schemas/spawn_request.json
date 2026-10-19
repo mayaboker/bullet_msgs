@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "title": "spawn_request",
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "controller_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        },
+        "physics_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        },
+        "episode_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        },
+        "request_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        },
+        "issued_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "scenario_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^\\S(?:[^\\x00-\\x1f]*\\S)?$"
+        },
+        "position_m": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "number",
+              "minimum": -250,
+              "maximum": 250
+            },
+            {
+              "type": "number",
+              "minimum": -250,
+              "maximum": 250
+            },
+            {
+              "type": "number",
+              "minimum": 0.015,
+              "maximum": 500
+            }
+          ],
+          "items": false,
+          "minItems": 3,
+          "maxItems": 3
+        }
+      },
+      "required": [
+        "schema_version",
+        "controller_id",
+        "physics_id",
+        "episode_id",
+        "request_id",
+        "issued_ms",
+        "scenario_name",
+        "position_m"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "title": "spawn_request",
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": 2,
+          "type": "integer"
+        },
+        "controller_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        },
+        "physics_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        },
+        "episode_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        },
+        "request_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        },
+        "issued_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "scenario_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^\\S(?:[^\\x00-\\x1f]*\\S)?$"
+        },
+        "position_m": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "number",
+              "minimum": -250,
+              "maximum": 250
+            },
+            {
+              "type": "number",
+              "minimum": -250,
+              "maximum": 250
+            },
+            {
+              "type": "number",
+              "minimum": 0.015,
+              "maximum": 500
+            }
+          ],
+          "items": false,
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "takeoff_height_m": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 100
+        }
+      },
+      "required": [
+        "schema_version",
+        "controller_id",
+        "physics_id",
+        "episode_id",
+        "request_id",
+        "issued_ms",
+        "scenario_name",
+        "position_m",
+        "takeoff_height_m"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

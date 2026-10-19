@@ -218,3 +218,31 @@ are null with false validity flags; inactive packets clear all estimates/residua
 TTC validity requires a positive qualified estimate. Confidence is its reason and
 nonnegative dimensionless relative fit residual, not a probability. The schema
 and validator reject extra fields, nonfinite values and inconsistent validity.
+
+## Stopped spawn selection
+
+`bullet_msgs.spawn` exports `SpawnRequest`, `SpawnState`, strict validators and
+exact `simulation/spawn_request` / `simulation/spawn_state` topics. Packaged
+schemas are `spawn_request.json` and `spawn_state.json`; native topic/bounds
+constants are in `include/bullet_msgs/spawn.hpp`. Both contracts support schema v1 and v2. V2 adds required `takeoff_height_m`
+(finite 0.1–100 m relative climb); v1 requests use the 20 m default.
+Requests share lifecycle 5557; status shares physics telemetry 5555.
+
+Request fields are controller/physics/episode IDs, stable request ID, monotonic
+`issued_ms`, scenario name and initial `position_m` in Bullet XYZ metres (Z up).
+Names are nonblank, trimmed, at most 64 characters with no control characters.
+X/Y are within ±250 m; world Z is 0.015–500 m. All numeric values must be finite.
+Terrain clearance is validated by Godot against the actual landscape triangles.
+
+Status carries current physics/controller/episode IDs, applied scenario name and
+position, latest nullable request ID, result `idle|applied|rejected` and reason.
+Only idle has a null request ID. Status describes configuration, not live pose;
+it repeats every 100 ms even stopped. Fresh controller heartbeat and request age
+<=1 s are required. Requests bind to a physics instance and stopped episode;
+idempotent retries return the earlier outcome without resetting the new episode.
+
+`flight_feedback.json` and `validate_feedback` also accept v2 feedback carrying
+required `takeoff_height_m`. The external-RC runner repeats the applied value in
+every feedback alongside its episode source. This lets the app latch the takeoff
+goal before commanding that episode without relying on the timing of a separate
+configuration advertisement. Legacy v1 feedback retains the 20 m default.

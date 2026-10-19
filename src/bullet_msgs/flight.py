@@ -105,8 +105,12 @@ def validate_config(value):
 
 
 def validate_feedback(value):
-    _shape(value, FEEDBACK_FIELDS)
-    _version(value['schema_version'])
+    version = value.get('schema_version') if isinstance(value, dict) else None
+    _shape(value, FEEDBACK_FIELDS | {'takeoff_height_m'} if version == 2 else FEEDBACK_FIELDS)
+    _integer(version, 1, 2)
+    if version == 2:
+        from .spawn import validate_takeoff_height
+        validate_takeoff_height(value['takeoff_height_m'])
     validate_source(value['source'])
     if value['barometer_altitude_m'] is not None:
         _number(value['barometer_altitude_m'])
