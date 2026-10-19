@@ -201,3 +201,20 @@ consistent physics/episode/time association. Reports use 5557; results and state
 use 5555. They use existing bounded JSON transport and host monotonic time.
 Native JSON serialization preserves full double precision and integral stamp
 fields, so a source survives a Godot round trip without losing its identity.
+
+## Focused LOS logging contract
+
+`bullet_msgs.los` exports `LosTelemetry`, `LOS_TOPIC` (`tracking/front/los`),
+`LOS_HZ=30` and `validate_los`. `los_telemetry.json` is a strict version1 contract
+for degree-based bearing/rate, TTC/confidence, state and source/generation stamps.
+Use the existing bounded `flight.encode/decode` helpers. This topic does not carry
+RC authority or change the library's native radian interfaces.
+
+Every packet carries publisher sequence/app identity and a physics source stamp.
+Active packets identify the originating navigation sequence and generated_us;
+inactive markers use the lifecycle transition time and null navigation_sequence.
+State/stage retain the last actual result until a new episode. Invalid estimates
+are null with false validity flags; inactive packets clear all estimates/residual.
+TTC validity requires a positive qualified estimate. Confidence is its reason and
+nonnegative dimensionless relative fit residual, not a probability. The schema
+and validator reject extra fields, nonfinite values and inconsistent validity.

@@ -1,0 +1,402 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Focused LOS telemetry in degrees",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "app_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "physics_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        },
+        "episode_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        },
+        "stream_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        },
+        "step_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "simulation_time_s": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000000000.0
+        },
+        "measurement_us": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "physics_id",
+        "episode_id",
+        "stream_id",
+        "step_index",
+        "simulation_time_s",
+        "measurement_us"
+      ]
+    },
+    "generated_us": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "navigation_sequence": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "navigator_state": {
+      "anyOf": [
+        {
+          "enum": [
+            "disabled",
+            "acquire",
+            "track",
+            "recover",
+            "fault"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "stage": {
+      "anyOf": [
+        {
+          "enum": [
+            "bearing",
+            "ttc",
+            "terminal"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "mission_phase": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "elevation_deg": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": -1000000000000.0,
+          "maximum": 1000000000000.0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "azimuth_deg": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": -1000000000000.0,
+          "maximum": 1000000000000.0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "bearing_valid": {
+      "type": "boolean"
+    },
+    "elevation_rate_deg_s": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": -1000000000000.0,
+          "maximum": 1000000000000.0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "azimuth_rate_deg_s": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": -1000000000000.0,
+          "maximum": 1000000000000.0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "rate_observable": {
+      "type": "boolean"
+    },
+    "optical_ttc_s": {
+      "anyOf": [
+        {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000000000000.0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ttc_valid": {
+      "type": "boolean"
+    },
+    "ttc_reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "ttc_relative_residual": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000000000.0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "app_id",
+    "sequence",
+    "source",
+    "generated_us",
+    "navigation_sequence",
+    "navigator_state",
+    "stage",
+    "reason",
+    "mission_phase",
+    "active",
+    "elevation_deg",
+    "azimuth_deg",
+    "bearing_valid",
+    "elevation_rate_deg_s",
+    "azimuth_rate_deg_s",
+    "rate_observable",
+    "optical_ttc_s",
+    "ttc_valid",
+    "ttc_reason",
+    "ttc_relative_residual"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "bearing_valid": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "elevation_deg": {
+            "type": "null"
+          },
+          "azimuth_deg": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "elevation_deg": {
+            "type": "number"
+          },
+          "azimuth_deg": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "rate_observable": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "elevation_rate_deg_s": {
+            "type": "null"
+          },
+          "azimuth_rate_deg_s": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "elevation_rate_deg_s": {
+            "type": "number"
+          },
+          "azimuth_rate_deg_s": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "ttc_valid": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "optical_ttc_s": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "optical_ttc_s": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "rate_observable": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "bearing_valid": {
+            "const": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "ttc_valid": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "ttc_reason": {
+            "const": "qualified"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "active": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "navigation_sequence": {
+            "type": "null"
+          },
+          "elevation_deg": {
+            "type": "null"
+          },
+          "azimuth_deg": {
+            "type": "null"
+          },
+          "elevation_rate_deg_s": {
+            "type": "null"
+          },
+          "azimuth_rate_deg_s": {
+            "type": "null"
+          },
+          "optical_ttc_s": {
+            "type": "null"
+          },
+          "ttc_relative_residual": {
+            "type": "null"
+          },
+          "bearing_valid": {
+            "const": false
+          },
+          "rate_observable": {
+            "const": false
+          },
+          "ttc_valid": {
+            "const": false
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "navigation_sequence": {
+            "type": "integer"
+          },
+          "navigator_state": {
+            "type": "string"
+          },
+          "stage": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  ]
+}
