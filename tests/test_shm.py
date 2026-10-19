@@ -158,7 +158,7 @@ def test_invalid_tcp_endpoint(endpoint):
 def test_duplicate_endpoints_and_schemas():
     with pytest.raises(ValueError, match='differ'):
         validate_transport(dict(telemetry_endpoint='tcp://127.0.0.1:5555', image_endpoint='tcp://127.0.0.1:5555', control_endpoint='tcp://127.0.0.1:5557'))
-    assert json.loads(schema_bytes('pose.json'))['properties']['schema_version']['const'] == 2
+    assert [v['properties']['schema_version']['const'] for v in json.loads(schema_bytes('pose.json'))['oneOf']] == [2, 3]
     with pytest.raises(ValueError):
         schema_bytes('../pose.json')
 

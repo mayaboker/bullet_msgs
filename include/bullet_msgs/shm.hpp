@@ -93,7 +93,7 @@ public:
     }
 
     // Empty notification means every slot is busy, never wait for readers.
-    std::string write(const uint8_t *pixels, size_t size, uint64_t capture_ns) {
+    std::string write(const uint8_t *pixels, size_t size, uint64_t capture_ns, const std::string &source_json = {}) {
         if (!frame_bytes || size != frame_bytes) throw std::runtime_error("SHM RGB frame size mismatch");
         ++sequence;
         for (size_t attempt = 0; attempt < SLOT_COUNT; ++attempt) {
@@ -120,11 +120,11 @@ public:
             std::atomic_thread_fence(std::memory_order_seq_cst);
             const uint8_t complete[8]{1};
             if (pwrite(slot.fd, complete, 8, 56) != 8) throw std::runtime_error("could not commit SHM slot");
-            const auto metadata = "{\"version\":1,\"session\":\"" + session + "\",\"slot\":" + std::to_string(index) +
+            const auto metadata = "{\"version\":" + std::string(source_json.empty() ? "1" : "2") + ",\"session\":\"" + session + "\",\"slot\":" + std::to_string(index) +
                 ",\"shm_name\":\"" + slot.name + "\",\"width\":" + std::to_string(width) +
                 ",\"height\":" + std::to_string(height) + ",\"encoding\":\"rgb8\",\"step\":" + std::to_string(width * 3) +
                 ",\"bytes\":" + std::to_string(frame_bytes) + ",\"sequence\":" + std::to_string(sequence) +
-                ",\"capture_ns\":" + std::to_string(capture_ns) + "}";
+                ",\"capture_ns\":" + std::to_string(capture_ns) + (source_json.empty() ? "" : ",\"source\":" + source_json) + "}";
             if (metadata.size() > MAX_METADATA_BYTES) throw std::runtime_error("SHM descriptor too large");
             constexpr char topic[] = "camera/front/image";
             std::string message(topic, sizeof(topic));

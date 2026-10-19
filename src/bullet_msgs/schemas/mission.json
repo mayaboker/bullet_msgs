@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "physics_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "episode_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "app_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "measurement_us": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "simulation_time_s": {
+      "type": "number",
+      "minimum": -1000000000000.0,
+      "maximum": 1000000000000.0
+    },
+    "phase": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "relative_altitude_m": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": -1000000000000.0,
+          "maximum": 1000000000000.0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "vertical_speed_m_s": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": -1000000000000.0,
+          "maximum": 1000000000000.0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "hover_remaining_s": {
+      "type": "number",
+      "minimum": -1000000000000.0,
+      "maximum": 1000000000000.0
+    },
+    "target_remaining_s": {
+      "type": "number",
+      "minimum": -1000000000000.0,
+      "maximum": 1000000000000.0
+    },
+    "navigator_state": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "diagnostics": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "physics_id",
+    "episode_id",
+    "app_id",
+    "sequence",
+    "measurement_us",
+    "simulation_time_s",
+    "phase",
+    "reason",
+    "relative_altitude_m",
+    "vertical_speed_m_s",
+    "hover_remaining_s",
+    "target_remaining_s",
+    "navigator_state",
+    "diagnostics"
+  ]
+}

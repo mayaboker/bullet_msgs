@@ -5,7 +5,7 @@ import re
 
 
 def schema_bytes(name):
-    if name not in ("config.json", "pose.json", "image.json", "command.json", "state.json", "bbox.json"):
+    if name not in ("config.json", "pose.json", "image.json", "command.json", "state.json", "bbox.json", "flight_rc.json", "flight_config.json", "flight_feedback.json", "mission.json"):
         raise ValueError("unknown bullet_msgs schema")
     return files("bullet_msgs").joinpath("schemas", name).read_bytes()
 
@@ -19,7 +19,8 @@ def validate_endpoint(endpoint):
 
 
 def validate_transport(profile):
-    if not isinstance(profile, dict) or set(profile) != {"telemetry_endpoint", "image_endpoint", "control_endpoint"}:
+    required = {"telemetry_endpoint", "image_endpoint", "control_endpoint"}
+    if not isinstance(profile, dict) or not required <= set(profile) or set(profile) - required - {"flight_command_endpoint"}:
         raise ValueError("expected telemetry_endpoint, image_endpoint and control_endpoint")
     for endpoint in profile.values():
         validate_endpoint(endpoint)

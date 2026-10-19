@@ -157,3 +157,29 @@ physics telemetry and does not change the existing three-key transport profile.
 `validate_endpoint()` shares loopback TCP validation with application publishers.
 PUB/SUB can lose results; arrival-time RawImage MCAP records do not retain source
 session/sequence, so exact image association is not guaranteed.
+
+## Flight and stamped capture contracts
+
+`bullet_msgs.flight` validates bounded RC intent, platform configuration, sensor
+feedback and capture sources. JSON schemas are `flight_rc.json`,
+`flight_config.json`, `flight_feedback.json` and `mission.json`. RC packets carry
+18 integer channels, physics/episode/app identities, increasing sequence,
+`issued_us`, `valid_until_us` and `active`. Lifetime is at most 100 ms; validators
+also enforce finite values and mappings. Ids/timestamps use JSON-safe integers
+through 2^53-1. Time is Linux host monotonic microseconds, not Unix time.
+
+`flight_command_endpoint` is optional in legacy transport profiles. When present
+it must be another distinct loopback TCP endpoint. The app binds it; physics
+subscribes with exact topic matching. Topic constants are in `bullet_msgs.flight`.
+
+Pose v3 adds a `source`: physics_id, episode_id, stream_id, step_index,
+simulation_time_s, measurement_us. It must describe the same pose. Image
+descriptor v2 carries that same source and `capture_ns=measurement_us*1000`.
+The SHM binary header **remains version 1**. Legacy pose v2/descriptor v1 remain
+supported. Capture time identifies the rendered source observation, not render
+arrival or GPU completion. Consumers must enforce episode identity and age;
+arrival-timestamped MCAP alone cannot reconstruct exact image/pose association.
+
+Bbox v2 retains image session/sequence/capture_ns and adds the same validated
+source for exact capture association in recorded JSON. Bbox v1 remains supported
+for legacy detector-only streams.

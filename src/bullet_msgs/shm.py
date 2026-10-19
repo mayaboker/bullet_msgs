@@ -48,12 +48,12 @@ def _reject_constant(value):
 def validate_descriptor(metadata):
     required = {'version', 'session', 'slot', 'shm_name', 'width', 'height', 'encoding',
                 'step', 'bytes', 'sequence', 'capture_ns'}
-    if not isinstance(metadata, dict) or set(metadata) != required:
+    if not isinstance(metadata, dict) or set(metadata) not in (required, required | {'source'}):
         raise ValueError('invalid image descriptor fields')
     for key in ('version', 'slot', 'width', 'height', 'step', 'bytes', 'sequence', 'capture_ns'):
         if type(metadata[key]) is not int:
             raise ValueError(f'{key} must be an integer')
-    if metadata['version'] != VERSION or metadata['slot'] not in range(SLOTS):
+    if metadata['version'] not in (1, 2) or metadata['slot'] not in range(SLOTS):
         raise ValueError('unsupported descriptor version or slot')
     if not isinstance(metadata['session'], str) or not re.fullmatch('[0-9a-f]{32}', metadata['session']):
         raise ValueError('invalid publisher session')
@@ -64,6 +64,13 @@ def validate_descriptor(metadata):
         raise ValueError('invalid descriptor byte count')
     if not 1 <= metadata['sequence'] < 2**64 or not 0 <= metadata['capture_ns'] < 2**64:
         raise ValueError('invalid frame sequence or capture timestamp')
+    if metadata['version'] == 2:
+        from .flight import validate_source
+        validate_source(metadata.get('source'))
+        if metadata['capture_ns'] != metadata['source']['measurement_us'] * 1000:
+            raise ValueError('capture timestamp differs from source measurement')
+    elif 'source' in metadata:
+        raise ValueError('source requires descriptor version 2')
     return metadata
 
 
@@ -191,7 +198,7 @@ class FrameWriter:
             self.close()
             raise
 
-    def write(self, topic, pixels, capture_ns=None):
+    def write(self, topic, pixels, capture_ns=None, *, source=None):
         if not self.slots:
             raise RuntimeError('SHM writer is closed')
         if len(pixels) != self.layout['bytes']:
@@ -209,6 +216,8 @@ class FrameWriter:
                 metadata = dict(version=VERSION, session=self.session, slot=index,
                                 shm_name='/' + path.name, sequence=self.sequence,
                                 capture_ns=capture_ns, **self.layout)
+                if source is not None:
+                    metadata.update(version=2, source=dict(source))
                 message = encode_descriptor(topic, metadata)
                 if os.pwrite(fd, bytes(8), 56) != 8:
                     raise OSError('could not invalidate SHM slot')

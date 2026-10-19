@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "physics_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "stream_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "mass_kg": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1000000000000.0
+    },
+    "gravity_m_s2": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1000000000000.0
+    },
+    "max_thrust_n": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1000000000000.0
+    },
+    "rc_angle_scale_rad": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1000000000000.0
+    },
+    "rc_yaw_rate_scale_rad_s": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1000000000000.0
+    },
+    "physics_hz": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1000000000000.0
+    },
+    "feedback_hz": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1000000000000.0
+    },
+    "command_hz": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1000000000000.0
+    },
+    "aetr_channels": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 18
+      }
+    },
+    "arm_channel": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 18
+    },
+    "mode_channel": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 18
+    },
+    "camera": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "width_px": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8192
+        },
+        "height_px": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8192
+        },
+        "fov_x_deg": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 180
+        }
+      },
+      "required": [
+        "width_px",
+        "height_px",
+        "fov_x_deg"
+      ]
+    },
+    "attitude_model": {
+      "const": "ideal"
+    }
+  },
+  "required": [
+    "schema_version",
+    "physics_id",
+    "stream_id",
+    "mass_kg",
+    "gravity_m_s2",
+    "max_thrust_n",
+    "rc_angle_scale_rad",
+    "rc_yaw_rate_scale_rad_s",
+    "physics_hz",
+    "feedback_hz",
+    "command_hz",
+    "aetr_channels",
+    "arm_channel",
+    "mode_channel",
+    "camera",
+    "attitude_model"
+  ]
+}
