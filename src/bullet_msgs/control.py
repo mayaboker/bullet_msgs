@@ -45,9 +45,12 @@ def validate_command(value):
 
 def validate_state(value):
     fields = {'schema_version', 'physics_id', 'controller_id', 'episode_id', 'state', 'reason', 'simulation_time_s'}
+    version = value.get('schema_version') if isinstance(value, dict) else None
+    if version == 2:
+        fields = fields | {'terminal_result'}
     if not isinstance(value, dict) or set(value) != fields:
         raise ValueError('invalid simulation state fields')
-    if type(value['schema_version']) is not int or value['schema_version'] != 1 or not identity(value['physics_id']):
+    if type(value['schema_version']) is not int or value['schema_version'] not in (1, 2) or not identity(value['physics_id']):
         raise ValueError('invalid state version or physics identity')
     if value['controller_id'] is not None and not identity(value['controller_id']):
         raise ValueError('invalid state controller identity')
@@ -58,6 +61,13 @@ def validate_state(value):
     elapsed = value['simulation_time_s']
     if type(elapsed) not in (int, float) or not 0 <= elapsed <= 1e12:
         raise ValueError('invalid simulation time')
+    if version == 2 and value['terminal_result'] is not None:
+        from .scenario import validate_end
+        end = validate_end(value['terminal_result'])
+        final = end['final_source']
+        if (value['state'] != 'stopped' or value['reason'] != end['reason']
+                or any(value[k] != final[k] for k in ('physics_id', 'episode_id', 'simulation_time_s'))):
+            raise ValueError('invalid terminal simulation state')
     return value
 
 

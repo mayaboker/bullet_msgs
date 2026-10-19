@@ -183,3 +183,21 @@ arrival-timestamped MCAP alone cannot reconstruct exact image/pose association.
 Bbox v2 retains image session/sequence/capture_ns and adds the same validated
 source for exact capture association in recorded JSON. Bbox v1 remains supported
 for legacy detector-only streams.
+
+## Collision and terminal scenario contracts
+
+`bullet_msgs.scenario` exposes typed `CollisionReport` / `ScenarioEnd`, strict
+validators and exact topic constants. Shared JSON schemas are `collision.json` and
+`scenario_end.json`. A report on `render/drone_1/collision` carries event/controller
+identity, issued monotonic microseconds, stamped source, red_truck target and the
+detected drone position in Bullet world metres. The renderer uses the same event
+ID on retries; IDs are unique across episodes. Physics validates freshness,
+current ownership and known source history before accepting.
+
+`scenario/ended` carries the confirmed report, success/target_hit, ended_us and a
+separate final frozen source. State v2 adds required nullable `terminal_result`
+with the same result; v1 is retained. Terminal results require stopped state and
+consistent physics/episode/time association. Reports use 5557; results and states
+use 5555. They use existing bounded JSON transport and host monotonic time.
+Native JSON serialization preserves full double precision and integral stamp
+fields, so a source survives a Godot round trip without losing its identity.
