@@ -1,0 +1,33 @@
+"""Shared schemas and POSIX SHM images for the local Bullet pipeline."""
+from importlib.resources import files
+import json
+import re
+
+
+def schema_bytes(name):
+    if name not in ("config.json", "pose.json", "image.json", "command.json", "state.json", "bbox.json"):
+        raise ValueError("unknown bullet_msgs schema")
+    return files("bullet_msgs").joinpath("schemas", name).read_bytes()
+
+
+def validate_endpoint(endpoint):
+    """Validate a local TCP endpoint shared by transport and app publishers."""
+    match = re.fullmatch(r"tcp://127\.0\.0\.1:([1-9][0-9]{0,4})", endpoint) if isinstance(endpoint, str) else None
+    if not match or not 1 <= int(match[1]) <= 65535:
+        raise ValueError("expected loopback TCP endpoint tcp://127.0.0.1:<port 1-65535>")
+    return endpoint
+
+
+def validate_transport(profile):
+    if not isinstance(profile, dict) or set(profile) != {"telemetry_endpoint", "image_endpoint", "control_endpoint"}:
+        raise ValueError("expected telemetry_endpoint, image_endpoint and control_endpoint")
+    for endpoint in profile.values():
+        validate_endpoint(endpoint)
+    if len(set(profile.values())) != len(profile):
+        raise ValueError("endpoints must differ")
+    return profile
+
+
+def load_transport(path):
+    with open(path) as stream:
+        return validate_transport(json.load(stream))

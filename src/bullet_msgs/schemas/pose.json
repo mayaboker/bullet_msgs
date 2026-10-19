@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 2,
+      "type": "integer"
+    },
+    "stream_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "drone_id": {
+      "const": "drone_1"
+    },
+    "episode_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "publisher_drops": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "step_index": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "simulation_time_s": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1000000000000.0
+    },
+    "position_m": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "number",
+        "minimum": -1000000000.0,
+        "maximum": 1000000000.0
+      }
+    },
+    "orientation_xyzw": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "number",
+        "minimum": -1,
+        "maximum": 1
+      }
+    },
+    "linear_velocity_m_s": {
+      "description": "Ground-truth linear velocity in Bullet world XYZ coordinates, m/s, Z up.",
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "number",
+        "minimum": -1000000000.0,
+        "maximum": 1000000000.0
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "stream_id",
+    "drone_id",
+    "episode_id",
+    "sequence",
+    "publisher_drops",
+    "step_index",
+    "simulation_time_s",
+    "position_m",
+    "orientation_xyzw",
+    "linear_velocity_m_s"
+  ]
+}

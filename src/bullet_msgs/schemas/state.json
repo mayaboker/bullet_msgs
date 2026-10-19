@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "physics_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "controller_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "episode_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "state": {
+      "enum": [
+        "running",
+        "stopped",
+        "error"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "simulation_time_s": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1000000000000.0
+    }
+  },
+  "required": [
+    "schema_version",
+    "physics_id",
+    "controller_id",
+    "episode_id",
+    "state",
+    "reason",
+    "simulation_time_s"
+  ]
+}

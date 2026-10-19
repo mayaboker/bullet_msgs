@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Red target bounding box",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "image_topic": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "session": {"type": "string", "pattern": "^[0-9a-f]{32}$"},
+    "sequence": {"type": "integer", "minimum": 1, "maximum": 18446744073709551615},
+    "capture_ns": {
+      "description": "Source image capture timestamp, monotonic nanoseconds, not Unix time.",
+      "type": "integer", "minimum": 0, "maximum": 18446744073709551615
+    },
+    "bbox": {
+      "description": "Pixel coordinates, origin at image top left, x right and y down. Null means no target in this frame.",
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "x": {"type": "integer", "minimum": 0, "maximum": 4294967295},
+            "y": {"type": "integer", "minimum": 0, "maximum": 4294967295},
+            "width": {"type": "integer", "minimum": 1, "maximum": 4294967295},
+            "height": {"type": "integer", "minimum": 1, "maximum": 4294967295}
+          },
+          "required": ["x", "y", "width", "height"]
+        }
+      ]
+    }
+  },
+  "required": ["schema_version", "image_topic", "session", "sequence", "capture_ns", "bbox"]
+}

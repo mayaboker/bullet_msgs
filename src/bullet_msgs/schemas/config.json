@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "type": "integer"
+    },
+    "stream_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "camera": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "width_px": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8192
+        },
+        "height_px": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8192
+        },
+        "fov_x_deg": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 180
+        }
+      },
+      "required": [
+        "width_px",
+        "height_px",
+        "fov_x_deg"
+      ]
+    },
+    "fps": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 240
+    }
+  },
+  "required": [
+    "schema_version",
+    "stream_id",
+    "camera",
+    "fps"
+  ]
+}

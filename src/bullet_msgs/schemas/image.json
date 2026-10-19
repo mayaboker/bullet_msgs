@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
+    "session": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{32}$"
+    },
+    "slot": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2
+    },
+    "shm_name": {
+      "type": "string",
+      "pattern": "^/bullet_msgs_[0-9a-f]{32}_s[0-2]$"
+    },
+    "width": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4294967295
+    },
+    "height": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4294967295
+    },
+    "encoding": {
+      "enum": [
+        "rgb8",
+        "bgr8"
+      ]
+    },
+    "step": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4294967295
+    },
+    "bytes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 67108864
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 18446744073709551615
+    },
+    "capture_ns": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 18446744073709551615
+    }
+  },
+  "required": [
+    "version",
+    "session",
+    "slot",
+    "shm_name",
+    "width",
+    "height",
+    "encoding",
+    "step",
+    "bytes",
+    "sequence",
+    "capture_ns"
+  ]
+}
