@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "type": "integer"
+    },
+    "physics_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "episode_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "controller_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "request_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "behavior": {
+          "enum": [
+            "constant",
+            "gusts"
+          ]
+        },
+        "velocity_world_m_s": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": -1000000000000.0,
+            "maximum": 1000000000000.0
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "gust_stddev_m_s": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1000000000000.0
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "correlation_time_s": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000000000000.0
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "enabled",
+        "behavior",
+        "velocity_world_m_s",
+        "gust_stddev_m_s",
+        "correlation_time_s",
+        "seed"
+      ]
+    },
+    "velocity_world_m_s": {
+      "type": "array",
+      "items": {
+        "type": "number",
+        "minimum": -1000000000000.0,
+        "maximum": 1000000000000.0
+      },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "simulation_time_s": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1000000000000.0
+    },
+    "result": {
+      "enum": [
+        "idle",
+        "applied",
+        "rejected"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    }
+  },
+  "required": [
+    "schema_version",
+    "physics_id",
+    "episode_id",
+    "controller_id",
+    "request_id",
+    "settings",
+    "velocity_world_m_s",
+    "simulation_time_s",
+    "result",
+    "reason"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "result": {
+            "const": "idle"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "request_id": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,128}$"
+          }
+        }
+      }
+    }
+  ]
+}

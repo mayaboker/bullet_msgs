@@ -161,7 +161,9 @@ session/sequence, so exact image association is not guaranteed.
 ## Flight and stamped capture contracts
 
 `bullet_msgs.flight` validates bounded RC intent, platform configuration, sensor
-feedback and capture sources. JSON schemas are `flight_rc.json`,
+feedback and capture sources. Platform `attitude_model` accepts `ideal` and
+`imu_complementary`; the latter identifies physics-owned IMU attitude estimation.
+Feedback keeps the same body-to-world XYZW quaternion field and source stamp. JSON schemas are `flight_rc.json`,
 `flight_config.json`, `flight_feedback.json` and `mission.json`. RC packets carry
 18 integer channels, physics/episode/app identities, increasing sequence,
 `issued_us`, `valid_until_us` and `active`. Lifetime is at most 100 ms; validators
@@ -246,3 +248,44 @@ required `takeoff_height_m`. The external-RC runner repeats the applied value in
 every feedback alongside its episode source. This lets the app latch the takeoff
 goal before commanding that episode without relying on the timing of a separate
 configuration advertisement. Legacy v1 feedback retains the 20 m default.
+
+## Live wind
+
+`bullet_msgs.wind` defines strict validators and exact topics
+`simulation/wind_request` (existing lifecycle/control endpoint, default 5557) and
+`simulation/wind_state` (existing telemetry endpoint, default 5555). Packaged v1
+schemas are `wind_request.json` and `wind_state.json`; native constants are in
+`include/bullet_msgs/wind.hpp`.
+
+Requests contain `schema_version`, `physics_id`, `episode_id`, `controller_id`,
+`request_id`, monotonic `issued_ms` and `settings`. Settings contain boolean
+`enabled`, `behavior` (`constant` or `gusts`), world XYZ `velocity_world_m_s`,
+nonnegative XYZ `gust_stddev_m_s`, positive `correlation_time_s` and integer `seed`.
+All numbers must be finite and within shared contract bounds. Seed is bounded to
+±(2^53−1) for exact Godot/JSON round trips.
+
+States repeat identity/settings and include current world `velocity_world_m_s`,
+`simulation_time_s`, nullable `request_id`, `result` (`idle`, `applied`, `rejected`)
+and `reason`. The controller may be null before ownership. State is cached at
+10 Hz and expires in the native consumer after 1000 ms. Reads do not sample wind.
+Requests use the existing heartbeat ownership and one-second age limit, plus
+bounded request-ID deduplication. Runtime physics, not the renderer, owns gusts.
+
+## Flight analysis contracts
+
+Packaged JSON schemas `analysis_ground_truth.json`, `analysis_sensors.json`,
+`analysis_config.json`, `render_health.json`, `image_metadata.json` and
+`recording_health.json` describe diagnostic-only recording data. Physics publishes
+`analysis/physics/ground_truth` at 100 Hz and `analysis/physics/sensors` at its
+sampling rate on telemetry; app/physics publish `analysis/<role>/config` at 1 Hz.
+These snapshots retain source identities, resolved settings and Git revisions
+(with `+dirty` when applicable). They do not extend sensor-only flight feedback.
+Sensor values are the outputs actually exposed by the sensor implementation,
+including its configured filtering. Unavailable raw values are not invented.
+
+Godot publishes `analysis/render/health` at 1 Hz on the existing image endpoint:
+source age, dropped/superseded/stale frames, sequence gaps and errors. This exact
+JSON topic/schema pair is allowed beside the independent SHM descriptor input.
+The recorder locally adds `<image topic>/metadata` to link original exposure
+identity to MCAP image log time and recorder sequence. Final `recording_health`
+is an MCAP metadata record whose map values are JSON encoded.

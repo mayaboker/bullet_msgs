@@ -92,7 +92,7 @@ def validate_config(value):
         _integer(channel, 1, CHANNEL_COUNT)
     if len(set((*mapping, value['arm_channel'], value['mode_channel']))) != 6:
         raise ValueError('overlapping RC mapping')
-    if value['attitude_model'] != 'ideal':
+    if value['attitude_model'] not in ('ideal', 'imu_complementary'):
         raise ValueError('unsupported attitude model')
     camera = value['camera']
     _shape(camera, {'width_px', 'height_px', 'fov_x_deg'})

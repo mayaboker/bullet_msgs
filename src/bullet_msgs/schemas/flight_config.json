@@ -103,7 +103,7 @@
       ]
     },
     "attitude_model": {
-      "const": "ideal"
+      "enum": ["ideal", "imu_complementary"]
     }
   },
   "required": [

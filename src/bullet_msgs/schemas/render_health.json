@@ -1,0 +1,110 @@
+{
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "physics_id": {
+      "type": "string",
+      "maxLength": 4096
+    },
+    "episode_id": {
+      "type": "string",
+      "maxLength": 4096
+    },
+    "generated_us": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "stats": {
+      "type": "object",
+      "properties": {
+        "frames": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "busy_slots": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "publication_drops": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "invalid": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "superseded": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "sequence_gaps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "stale": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "source_age_ms": {
+          "type": "number",
+          "minimum": -1000000000000.0,
+          "maximum": 1000000000000.0
+        },
+        "controller_id": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "control_error": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "shm_session": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "error": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "running": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "frames",
+        "busy_slots",
+        "publication_drops",
+        "invalid",
+        "superseded",
+        "sequence_gaps",
+        "stale",
+        "source_age_ms",
+        "controller_id",
+        "control_error",
+        "shm_session",
+        "error",
+        "running"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "physics_id",
+    "episode_id",
+    "generated_us",
+    "stats"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

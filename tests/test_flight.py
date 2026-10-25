@@ -64,3 +64,20 @@ def test_feedback_v2_carries_selected_takeoff_and_v1_stays_valid():
         validate_feedback(dict(base, schema_version=2))
     with pytest.raises(ValueError):
         validate_feedback(dict(base, takeoff_height_m=6.5))
+
+
+@pytest.mark.parametrize('model', ['ideal', 'imu_complementary'])
+def test_attitude_models_match_wire_schema(model):
+    from bullet_msgs.flight import validate_config
+    packet = dict(schema_version=1, physics_id='physics', stream_id='stream', mass_kg=1.,
+                  gravity_m_s2=9.81, max_thrust_n=20., rc_angle_scale_rad=.5,
+                  rc_yaw_rate_scale_rad_s=2., physics_hz=240, feedback_hz=120, command_hz=100,
+                  aetr_channels=[1, 2, 3, 4], arm_channel=5, mode_channel=6,
+                  camera=dict(width_px=640, height_px=480, fov_x_deg=90.), attitude_model=model)
+    schema = Draft202012Validator(json.loads(schema_bytes('flight_config.json')))
+    validate_config(packet)
+    schema.validate(packet)
+    invalid = dict(packet, attitude_model='unknown')
+    with pytest.raises(ValueError):
+        validate_config(invalid)
+    assert not schema.is_valid(invalid)
